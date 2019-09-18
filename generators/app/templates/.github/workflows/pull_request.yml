@@ -1,0 +1,46 @@
+name: Test Pull Request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  support:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: installing
+        run: npm ci
+      - name: testing
+        run: npm test
+        env:
+          CI: true
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: installing
+        run: npm ci
+      - name: testing
+        run: npm test
+        env:
+          CI: true
+      - name: uploading to codecov
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
